@@ -4,7 +4,7 @@ We provide an improved and parallel implementation of a previous attack to Nacca
 
 Ref. : Birthday type attacks to the Naccache-Stern Knapsack cryptosystem, Information Proc.Letters (Elsevier) Vol. 138, October 2018, Pages 39-43 IPL, joint work with M. Anastasiadis and N. Chatzis.
 
-One branch has the seriac version and the master has the parallel
+One folder has the seriac version and the master has the parallel
 ## Getting Started
 
 You will need to have installed the libraries in Built With section, have the latest g++ version to build the project.
