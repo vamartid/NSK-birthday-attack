@@ -33,6 +33,7 @@ class Ns{
         // Other public functions
         /**
          * init vallues of p,q,n,s according to lenp & call init function to set u
+         * s and p are selected so that gcd(p-1,s)==1
          */
         void choose_pk_sk(int,mpz_class&,mpz_class&,unsigned int&,mpz_class*&,mpz_class&); //init vars
         /**
@@ -74,6 +75,11 @@ class Ns{
          * a mpz_class number with certain hamming weight and
          * a string with the 12 first from hex repr from the md5 digest of
          * the prod calculation according to the mpz_number on base of 2
+         * 
+         * This is the function which is creating  the sets with parallelism 
+         * Each thread takes a combination object to calculate the according prod
+         * and generate the pair needed.When after the calculation it will add
+         * the pair to the set.
          */
         void func2(std::vector <std::pair <std::string,std::vector<short>>>&,mpz_class*&,int,int,mpz_class,mpz_class); //init M lists
         /**

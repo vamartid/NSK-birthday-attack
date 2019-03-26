@@ -41,7 +41,7 @@ int main(int argc, char **argv){
     args::ValueFlag<int> h_num(msg_group,"integer", "Hamming weight of the random generated message m.\n\
 This vallue must belong to (0,n/2) where n is\n\
   42 if p's bits are  600\n\
-  70 if p's bits are 1024\n\
+  65 if p's bits are 1024\n\
  116 if p's bits are 2048 accordingly",{"ham","hamming"});
     args::ValueFlag<std::string> string_num_m(msg_group, "specific message", "Give specific message you sellected", {'m',"msg"});
     args::ValueFlag<std::string> string_num_m2(msg_group, "specific message", "Give specific message you sellected", {'b',"msg_bin"});
@@ -49,7 +49,7 @@ This vallue must belong to (0,n/2) where n is\n\
     args::ValueFlag<int> b_num(bound_group,"integer", "Number(#) to be subtracted from bound\n\
 so that (n/2-#) > 0\n\
   42 if p's bits are  600\n\
-  70 if p's bits are 1024\n\
+  65 if p's bits are 1024\n\
  116 if p's bits are 2048 accordingly",{"sb","substruct"});
     args::Flag no_randomness(testing_group, "Randomness", "Disable randomness testing purposes", {'r',"randomness"});
     args::HelpFlag help(help_group, "help", "Display help menu", {'h', "help"});
@@ -106,6 +106,8 @@ so that (n/2-#) > 0\n\
         std::cout << "Randomised OFF on I1,I2 of the attack" << std::endl; 
     }
 
+    // public key and secret key are chosen so that secret key has inverse mod (p-1)
+    // gcd(p-1,s)==1
     ns->choose_pk_sk(lenp,p,q,n,u,s);                    // set p,q,n,u,s
     
     // set message vallue

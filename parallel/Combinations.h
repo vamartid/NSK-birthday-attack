@@ -7,9 +7,7 @@
 
 class Combinations{
 	public:
-		/**
-		 *	init n,r,vector
-		 */
+        // Constructor inits n,r,vector
 		Combinations(int n,int r);
 		/**
 		 * set mpz_class result as the number of different compinations

@@ -5,7 +5,7 @@ LIBS =  -lgmpxx -lgmp -lcrypto
 LIBS_PAR =  -fopenmp -D_GLIBCXX_PARALLEL
 #CFLAGS passed to the compiler.
 #-fomit-frame-pointer flag does not help much
-CFLAGS =  -c -O0 $(LIBS)
+CFLAGS =  -std=c++11 -c -O0 $(LIBS)
 #Names of main objects
 OBJ_ONE_ATTACK = main.o
 OBJ_MULTIPLE_ATTACKS= main2.o
