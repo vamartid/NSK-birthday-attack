@@ -432,6 +432,8 @@ bool Ns::attack(unsigned int n,double bound1,mpz_class p,mpz_class c,int hamming
         // M1.reserve( number_of_cmb_ull );
         // std::cout<<"diff combinations "<<number_of_cmb_ull<<std::endl;
         // construction of the first set {prod(ui^ei)} to an unordered map
+        
+        // we save only U2 elements
         func2(M1,U2,s2,h2,p,c);
         // cout<<"n="<<len<<" h= "<<ham<<endl;
         // std::cout<<"M1 size "<<M1.size()<<std::endl;
@@ -453,6 +455,9 @@ bool Ns::attack(unsigned int n,double bound1,mpz_class p,mpz_class c,int hamming
                 std::string md5f12=prod_of_f2_when_c_not_bigger_1(cmb,U1,p,v);
                 
                 // calc if the pair exist
+                // we need to use find here because if I try to access the element
+                // and the element does not exist by the operator "at" it inserts the value
+                // check https://en.cppreference.com/w/cpp/container/unordered_map/operator_at
                 if(M1.find(md5f12) != M1.end()){
                     mpz_class msg;
                     construct_msg_mpz(msg,I1,cmb,s1,I2,M1[md5f12],s2);
