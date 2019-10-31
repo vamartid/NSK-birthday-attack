@@ -216,9 +216,9 @@ void Ns::gen(unsigned int n,double bound1,int flag,mpz_class p,mpz_class *u,int 
             I1[i]=i;
         }
         //print the array
-        for(int i =0;i<n+1;i++){
-            cout << I1[i]<<", ";
-        }cout<< endl;
+        // for(int i =0;i<n+1;i++){
+        //     cout << I1[i]<<", ";
+        // }cout<< endl;
         if(!randomness_off){
             // //shuffle the array we created
             // we do not suffle the first element which is n+1
@@ -404,8 +404,10 @@ bool Ns::attack(unsigned int n,double bound1,mpz_class p,mpz_class c,int hamming
             // b1=n,//not needed variable
         unsigned long long number_of;
         mpz_class m; //create a variable for the message to check result later
+        
         // declare M1,M2,M3 lists of number and md5
-        std::vector <std::pair <std::string,std::vector<short>>> M1,M2;
+        std::unordered_map < std::string, std::vector<short> > M1;
+        
         //set lim according to hamming weight
         int h1,h2;
         if(hamming%2==0){
@@ -415,112 +417,55 @@ bool Ns::attack(unsigned int n,double bound1,mpz_class p,mpz_class c,int hamming
             h1=(hamming+1)/2;
             h2=h1-1;
         }
+        std::cout << h1<< " " << h2<<std::endl;
         // set m as the message 
         this->decrypt(m,c,n,p,s);
-        // construction of the first set {prod(ui^ei)}
-        func2(M1,U1,s1,h1,p,mpz_class(1));
-        func2(M2,U2,s2,h2,p,c);
-        // declare intersection list of number and md5
-        std::vector <std::pair <std::string,std::vector<short>>> inters = intersection(M1, M2);
-        // delete duplicates
-        inters.erase( unique( inters.begin(), inters.end(),eq_first<std::string,std::vector<short>>() ), inters.end() );
-        // set capacity to size 
-        inters.shrink_to_fit();
+
         
-        mpz_class tmp_msg;
-        if(!inters.empty()){
-            // cout<<"----INSIDE----"<<endl;
-            if(inters.size()==1){//if size is 1 then it's the solution
-                //reconstruct message for the solution
-                std::string sol=inters.at(0).first;
-                std::vector <std::pair <std::string,std::vector<short>>>::iterator it1 = __gnu_parallel::find_if(M1.begin(), M1.end(),cmp_first_with<std::string,std::vector<short>>(sol));;
-                std::vector <std::pair <std::string,std::vector<short>>>::iterator it2 = __gnu_parallel::find_if(M2.begin(), M2.end(),cmp_first_with<std::string,std::vector<short>>(sol));;
-                //print info of pairs
-                // std::cout<<"M1 pair : " <<it1->first <<" ";
-                // for(int i=0;i<it1->second.size();++i){
-                //     std::cout<<it1->second[i]<<",";
-                // }
-                // std::cout<<std::endl;
-                // std::cout<<"M2 pair : " << it2->first <<" ";
-                // for(int i=0;i<it2->second.size();++i){
-                //     std::cout<<it2->second[i]<<",";
-                // }
-                // std::cout<<std::endl;
-                // std::string r1=std::string(s1-mpz_sizeinbase(it1->second.get_mpz_t(),2),'0')+it1->second.get_str(2);
-                // std::string r2=std::string(s2-mpz_sizeinbase(it2->second.get_mpz_t(),2),'0')+it2->second.get_str(2);
-                //create var for the message
-                mpz_class msg;
-                construct_msg_mpz(msg,I1,it1->second,s1,I2,it2->second,s2);
-                if(msg==m){//compare m with our message
-                    // // print msg
-                    std::cout <<"msg = "<<msg<<std::endl;
-                    
-                    M1.clear();
-                    M2.clear();
-                    
-                    std::vector <std::pair <std::string,std::vector<short>>> (M1).swap(M1);
-                    std::vector <std::pair <std::string,std::vector<short>>> (M2).swap(M2);
-                    
-                    inters.clear();
-                    std::vector <std::pair <std::string,std::vector<short>>> (inters).swap(inters);
-                    
-                    return true;
-                }
-                // //check it it is the same message with the decrypted;
-            }else{
-                for(int i=0;i<inters.size();i++){
-                    //reconstruct message for each possible solution
-                    std::string sol=inters.at(i).first;
-                    std::vector <std::pair <std::string,std::vector<short>>>::iterator it1 = __gnu_parallel::find_if(M1.begin(), M1.end(),cmp_first_with<std::string,std::vector<short>>(sol));;
-                    std::vector <std::pair <std::string,std::vector<short>>>::iterator it2 = __gnu_parallel::find_if(M2.begin(), M2.end(),cmp_first_with<std::string,std::vector<short>>(sol));;
-                    //print info of pairs
-                    // std::cout<<"M1 pair : " <<it1->first <<" ";
-                    // mpz_out_str(stdout,10,it1->second.get_mpz_t());//print
-                    // std::cout<<std::endl;
-                    // std::cout<<"M2 pair : " << it2->first <<" ";
-                    // mpz_out_str(stdout,10,it2->second.get_mpz_t());//print
-                    // std::cout<<std::endl;
-                    // std::string r1=std::string(s1-mpz_sizeinbase(it1->second.get_mpz_t(),2),'0')+it1->second.get_str(2);
-                    //s1 lenght of I1 and of max num of cmb e.g. (cmb(len,ham)  len is s1)
-                    //so s1-mpz_size_in_base2 
-                    //are the remaining length if we remove from s1 the number of diggits of the mpz num in base2
-                    //which is a number starting from 1 always so if it's smaller than the s1 it removes the zeros from start
-                    //so this part are only the non visible zeros
-                    //lastly we append the number in base of 2
-                    // std::string r2=std::string(s2-mpz_sizeinbase(it2->second.get_mpz_t(),2),'0')+it2->second.get_str(2);
-                    //create var for the message
+        Combinations* c_obj=new Combinations(s2,h2);//obj which calc next comp
+        // mpf_t to_be_multiplied_f;
+        //calc nwh
+        mpz_class number_of_cmb;//declare
+        unsigned long long number_of_cmb_ull;//var which will take vallue from number of cmb
+        c_obj->get_size(number_of_cmb);//set size of max compinations
+        number_of_cmb_ull=mpz_2_ull(number_of_cmb);//set ull from mpz
+        // M1.reserve( number_of_cmb_ull );
+        // std::cout<<"diff combinations "<<number_of_cmb_ull<<std::endl;
+        // construction of the first set {prod(ui^ei)} to an unordered map
+        func2(M1,U2,s2,h2,p,c);
+        // cout<<"n="<<len<<" h= "<<ham<<endl;
+        // std::cout<<"M1 size "<<M1.size()<<std::endl;
+        
+        // find intersection list of number and md5 while generating each M2 set on the fly
+        c_obj=new Combinations(s1,h1);//obj which calc next comp
+        c_obj->get_size(number_of_cmb);//set size of max compinations
+        number_of_cmb_ull=mpz_2_ull(number_of_cmb);//set ull from mpz
+
+        bool found_msg = false;
+        mpz_class v=mpz_class(1);
+        #pragma omp parallel for
+        for(unsigned long long i=0;i<number_of_cmb_ull ;i++){
+            if(!found_msg){
+                //init/declare vars
+                std::vector<short> cmb;
+                #pragma omp critical
+                cmb = c_obj->next_combination();//set the cmb which is the next combination
+                std::string md5f12=prod_of_f2_when_c_not_bigger_1(cmb,U1,p,v);
+                
+                // calc if the pair exist
+                if(M1.find(md5f12) != M1.end()){
                     mpz_class msg;
-                    construct_msg_mpz(msg,I1,it1->second,s1,I2,it2->second,s2);
-                    if(tmp_msg!=msg){//compare msg with last message found
-                        if(msg==m){//compare m with our message
-                            // // print msg
-                            std::cout <<"msg = "<<msg<<std::endl;
-                            
-                            M1.clear();
-                            M2.clear();
-                            
-                            std::vector <std::pair <std::string,std::vector<short>>> (M1).swap(M1);
-                            std::vector <std::pair <std::string,std::vector<short>>> (M2).swap(M2);
-                            
-                            inters.clear();
-                            std::vector <std::pair <std::string,std::vector<short>>> (inters).swap(inters);
-                            
-                            return true;
-                        }
-                        tmp_msg = msg;//set mpz
+                    construct_msg_mpz(msg,I1,cmb,s1,I2,M1[md5f12],s2);
+                    if(msg==m){//compare m with our message
+                        found_msg=true;//end break
+                        std::cout <<"msg = "<<msg<<std::endl;
                     }
-                    // //check it it is the same message with the decrypted;
                 }
             }
         }
-        inters.clear();
-        std::vector <std::pair <std::string,std::vector<short>>> (inters).swap(inters);
-        
         M1.clear();
-        M2.clear();
-        
-        std::vector <std::pair <std::string,std::vector<short>>> (M1).swap(M1);
-        std::vector <std::pair <std::string,std::vector<short>>> (M2).swap(M2);
+        if(found_msg)
+            return true;
     }
     return false;
 }
@@ -592,7 +537,7 @@ std::string Ns::prod_of_f2_when_c_not_bigger_1(std::vector<short> cmb,mpz_class 
  * a string with the 12 first from hex repr from the md5 digest of
  * the prod calculation according to the mpz_number on base of 2
  */
-void Ns::func2(std::vector <std::pair <std::string,std::vector<short>>> &RE,mpz_class *&L,int len,int ham,mpz_class p,mpz_class c){
+void Ns::func2(std::unordered_map < std::string, std::vector<short> > &RE,mpz_class *&L,int len,int ham,mpz_class p,mpz_class c){
     // cout<<"n="<<len<<" h= "<<ham<<endl;
     Combinations* c_obj=new Combinations(len,ham);//obj which calc next comp
     // mpf_t to_be_multiplied_f;
@@ -608,36 +553,21 @@ void Ns::func2(std::vector <std::pair <std::string,std::vector<short>>> &RE,mpz_
     //check if this way is better
     // RE.reserve(number_of_cmb_ull);
     // if(number_of_cmb_ull>1)
-    if(c>1){
-        #pragma omp parallel for
-        for(unsigned long long i=0;i<number_of_cmb_ull;i++){
-            //init/declare vars
-            // std::string md5f12;         // md5 string to be added to the pair
-            std::vector<short> cmb;
-            #pragma omp critical
-            cmb = c_obj->next_combination();//set the cmb which is the next combination
-            
-            std::string md5f12 = prod_of_f2_when_c_bigger_1(cmb,L,p,c);
-            
-            // calc digest
-            #pragma omp critical
-            RE.push_back(std::make_pair(md5f12,cmb)); //add pair
-        }
-    }else{
-        #pragma omp parallel for
-        for(unsigned long long i=0;i<number_of_cmb_ull;i++){
-            //init/declare vars
-            // std::string md5f12;         // md5 string to be added to the pair
-            std::vector<short> cmb;
-            #pragma omp critical
-            cmb = c_obj->next_combination();//set the cmb which is the next combination
-            
-            std::string md5f12=prod_of_f2_when_c_not_bigger_1(cmb,L,p,c);
-            
-            // calc digest
-            #pragma omp critical
-            RE.push_back(std::make_pair(md5f12,cmb)); //add pair
-        }
+    
+    #pragma omp parallel for
+    for(unsigned long long i=0;i<number_of_cmb_ull;i++){
+        //init/declare vars
+        // std::string md5f12;         // md5 string to be added to the pair
+        std::vector<short> cmb;
+        #pragma omp critical
+        cmb = c_obj->next_combination();//set the cmb which is the next combination
+        
+        std::string md5f12 = prod_of_f2_when_c_bigger_1(cmb,L,p,c);
+        
+        // calc digest
+        #pragma omp critical
+        // RE.emplace(md5f12, cmb);
+        RE[md5f12]=cmb; //add pair
     }
     // std::cout << "Finished genaration of M set : "<< number_of_cmb_ull<<endl;//print that number
     //clear combinations obj

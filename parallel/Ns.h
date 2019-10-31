@@ -6,11 +6,13 @@
 #include <iostream> //cout
 // #include <algorithm>// std::random_shuffle
 // for parallel
-#include<parallel/algorithm>
 # include <omp.h>//openmp
+#include<parallel/algorithm>
 // for parallel end
 #include <math.h>   //floor
 #include <gmpxx.h>//gmp c++ interface
+#include "unordered_map"
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -81,7 +83,7 @@ class Ns{
          * and generate the pair needed.When after the calculation it will add
          * the pair to the set.
          */
-        void func2(std::vector <std::pair <std::string,std::vector<short>>>&,mpz_class*&,int,int,mpz_class,mpz_class); //init M lists
+        void func2(std::unordered_map < std::string, std::vector<short> >&,mpz_class*&,int,int,mpz_class,mpz_class); //init M lists
         /**
          * calculate prod -exp
          */
